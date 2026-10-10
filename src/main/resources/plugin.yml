@@ -1,0 +1,16 @@
+name: EventCore
+version: '${version}'
+main: nl.eventcore.EventCorePlugin
+api-version: '26.2'
+description: Automatische events voor de server
+commands:
+  event:
+    description: Beheer en speel events
+    usage: /<command> <start|stop|join|leave|list|setup|give>
+permissions:
+  eventcore.play:
+    description: Meedoen aan events
+    default: true
+  eventcore.admin:
+    description: Events starten, stoppen en instellen
+    default: op

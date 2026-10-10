@@ -1,0 +1,248 @@
+# EventCore - config.yml
+# Locaties stel je in met: /event setup <event> <optie>   (opties zie je met tab of in de melding)
+# Ontbrekende opties worden bij het opstarten automatisch aangevuld. Herladen kan met /event reload.
+
+general:
+  lobby-timeout-minutes: 10   # lobby sluit automatisch als er niet genoeg spelers komen (0 = uit)
+
+# Automatisch events starten
+schedule:
+  enabled: false
+  timezone: "Europe/Amsterdam"
+  mode: rotation              # rotation = om de beurt, random = willekeurig
+  events: []                  # leeg = alle events. Voorbeeld: [tnttag, spleef, tntrun]
+  times: ["18:00", "20:30"]   # starttijden (24-uurs)
+  days: []                    # leeg = elke dag. Voorbeeld: [SATURDAY, SUNDAY]
+  announce-minutes-before: 5  # aankondiging X minuten van tevoren (0 = uit)
+
+tnttag:
+  min-players: 4          # zodra dit aantal er is, begint de lobby-countdown
+  max-players: 30
+  lobby-countdown: 30     # seconden
+  tagger-percent: 50      # zoveel procent van de levende spelers krijgt TNT (minimaal 1, er blijft altijd 1 zonder)
+  fuse-seconds: 20        # tijd voordat de TNT ontploft
+  round-pause-seconds: 5  # pauze tussen rondes
+  tag-cooldown-ms: 1500   # na het doorgeven kan je niet meteen teruggetikt worden
+  win-delay-seconds: 8    # tijd tussen de winnaar en het afsluiten van het event
+  void-depth: 30          # valt een speler zo ver onder de spawn, dan terug naar de spawn
+  rewards:
+    enabled: false
+    min-players: 4        # minder spelers aan de start = geen beloningen (tegen alt-farming)
+    # Console-commando's, %player% wordt de spelernaam. Voorbeeld: ["eco give %player% 500"]
+    winner: []
+    # Voor iedereen die tot het einde in het event bleef (ook de winnaar)
+    participation: []
+
+# Spleef: bouw zelf een vloer (bv. sneeuwblokken) en geef het gebied aan met
+# /event setup spleef pos1 en pos2 (kijk naar een blok). Daarnaast lobby en spawn
+# (spawn = waar toeschouwers komen). De vloer wordt na afloop automatisch hersteld.
+spleef:
+  min-players: 4
+  max-players: 30
+  lobby-countdown: 30
+  start-delay-seconds: 5      # voorbereiding: iedereen staat, maar slaan mag nog niet
+  win-delay-seconds: 8
+  breakable-blocks: [SNOW_BLOCK]   # alleen deze blokken kunnen kapot, binnen het gebied
+  give-shovel: true           # onverwoestbare diamanten schep in slot 1
+  max-region-volume: 200000   # veiligheidslimiet op het aantal blokken in het gebied
+  decay:                      # tegen urenlang wachten: de vloer brokkelt vanzelf af
+    enabled: true
+    start-seconds: 60         # na zoveel seconden spelen begint het afbrokkelen
+    interval-seconds: 3
+    blocks-per-step: 5
+  rewards:
+    enabled: false
+    min-players: 4
+    winner: []
+    participation: []
+
+# TNT Run: bouw zelf een vloer (klassiek: zand boven TNT) en geef het gebied aan met
+# /event setup tntrun pos1 en pos2 (kijk naar een blok). Daarnaast lobby en spawn
+# (spawn = waar toeschouwers komen). De vloer wordt na afloop automatisch hersteld.
+tntrun:
+  min-players: 4
+  max-players: 30
+  lobby-countdown: 30
+  start-delay-seconds: 5      # voorbereiding: iedereen staat, de vloer is nog veilig
+  win-delay-seconds: 8
+  breakable-blocks: [SAND, GRAVEL]   # blokken die verdwijnen als je erop staat
+  remove-below-materials: [TNT]      # blokken die direct eronder meeverdwijnen (leeg = niets)
+  remove-delay-ticks: 10      # zo lang duurt het voordat een blok onder je voeten verdwijnt
+  double-jumps: 3             # aantal dubbele sprongen per speler (0 = uit)
+  max-region-volume: 200000
+  rewards:
+    enabled: false
+    min-players: 4
+    winner: []
+    participation: []
+
+# Elytra Race: vlieg op volgorde door alle checkpoints naar de finish.
+# Instellen (je kijkrichting telt mee: kijk de vliegrichting op):
+#   /event setup elytrarace lobby | start | finish
+#   /event setup elytrarace checkpoint add        (voegt een checkpoint toe op je huidige positie)
+#   /event setup elytrarace checkpoint insert|remove|tp <nr>, list, show, clear
+elytrarace:
+  min-players: 2
+  max-players: 20
+  lobby-countdown: 30
+  start-delay-seconds: 5      # countdown op de startlijn, iedereen staat stil
+  win-delay-seconds: 8
+  winners: 3                  # aantal plekken: 1 = alleen een winnaar, 3 = top 3. De race stopt als ze vergeven zijn
+  max-duration-seconds: 300   # tijdslimiet voor de race (0 = geen limiet)
+  checkpoint-radius: 6.0      # hoe dicht je bij een checkpoint moet komen (in blokken)
+  finish-radius: 8.0
+  rockets: 3                  # vuurpijlen bij de start (0 = geen)
+  rockets-per-checkpoint: 1   # extra vuurpijlen per gehaald checkpoint (0 = geen)
+  reset-on-ground: true       # grond of water geraakt na het opstijgen = terug naar het laatste checkpoint
+  void-depth: 40              # zak je zo ver onder het laagste punt van de baan, dan word je teruggezet
+  start-spread: 1.5           # afstand tussen spelers op de startlijn (0 = allemaal op hetzelfde punt)
+  checkpoints: []             # vul je met /event setup elytrarace checkpoint add
+  rewards:
+    enabled: false
+    min-players: 2
+    # Console-commando's per plek, %player% wordt de spelernaam. Plekken boven 'winners' tellen niet mee.
+    places:
+      1: []
+      2: []
+      3: []
+    participation: []
+
+# Last Man Standing: PvP in een kleine arena, de laatste levende speler wint.
+# Geef de arena aan met /event setup lms pos1 en pos2 (kijk naar een hoekblok), plus lobby en spawn
+# (spawn = waar uitgeschakelde spelers toekijken). Spelers worden zo ver mogelijk uit elkaar in de arena gezet.
+lms:
+  min-players: 2
+  max-players: 20
+  lobby-countdown: 30
+  start-delay-seconds: 5      # voorbereiding: iedereen staat stil, vechten kan nog niet
+  win-delay-seconds: 8
+  glow-after-seconds: 120     # na zoveel seconden licht iedereen op, tegen verstoppen (0 = uit)
+  hunger: false               # honger aan/uit
+  natural-regen: true         # vanzelf genezen door een volle hongerbalk (uit = alleen met gouden appels/potions)
+  max-region-volume: 200000
+  # Kit voor iedereen bij de start. Per regel: "<item> [plek] [aantal]" - zelfde als /event give.
+  # Item zoals bij /give, ook met enchants: diamond_sword[enchantments={sharpness:2}]
+  # Plek: helmet, chestplate, leggings, boots, offhand, mainhand of inventory (eerstvolgende vrije plek, standaard)
+  kit:
+    - "iron_sword mainhand"
+    - "bow inventory"
+    - "cooked_beef inventory 8"
+    - "arrow inventory 16"
+    - "iron_helmet helmet"
+    - "iron_chestplate chestplate"
+    - "iron_leggings leggings"
+    - "iron_boots boots"
+    - "shield offhand"
+  rewards:
+    enabled: false
+    min-players: 4
+    winner: []
+    participation: []
+
+# One Shot: zoals Last Man Standing, maar iedereen heeft maar 1 hart.
+# Eigen arena: /event setup oneshot pos1 / pos2 / lobby / spawn (mag dezelfde plek zijn als bij lms).
+oneshot:
+  hearts: 1                   # aantal harten (0.5 = een half hart)
+  one-hit-kill: true          # elke klap of pijl van een andere speler is meteen raak (ook een slap geschoten pijl)
+  arrows-per-kill: 1          # pijlen erbij per kill (0 = uit)
+  min-players: 2
+  max-players: 20
+  lobby-countdown: 30
+  start-delay-seconds: 5
+  win-delay-seconds: 8
+  glow-after-seconds: 90
+  hunger: false
+  natural-regen: false
+  max-region-volume: 200000
+  # Zelfde schrijfwijze als lms.kit: "<item> [plek] [aantal]". Armor heeft weinig zin met one-hit-kill.
+  kit:
+    - "stone_sword mainhand"
+    - "bow inventory"
+    - "arrow inventory 1"
+  rewards:
+    enabled: false
+    min-players: 4
+    winner: []
+    participation: []
+
+# Hot Potato: zoals TNT Tag, maar 1 speler heeft de hete aardappel en niemand weet wanneer hij ontploft.
+# Stel in met /event setup hotpotato lobby en /event setup hotpotato spawn.
+hotpotato:
+  min-players: 3
+  max-players: 30
+  lobby-countdown: 30
+  holders: 1              # aantal spelers met een hete aardappel per ronde (er blijft altijd 1 zonder)
+  fuse-min-seconds: 10    # elke ronde ontploft de aardappel na een willekeurige tijd tussen min en max
+  fuse-max-seconds: 35
+  round-pause-seconds: 5
+  tag-cooldown-ms: 1500
+  win-delay-seconds: 8
+  void-depth: 30
+  rewards:
+    enabled: false
+    min-players: 4        # minder spelers aan de start = geen beloningen (tegen alt-farming)
+    # Console-commando's, %player% wordt de spelernaam. Voorbeeld: ["eco give %player% 500"]
+    winner: []
+    # Voor iedereen die tot het einde in het event bleef (ook de winnaar)
+    participation: []
+
+# Dropper: val door een parcours zonder dood te gaan. Een dropper bestaat uit maps 1, 2, 3, ...
+#   /event setup dropper start <map>    start van een map (je kijkrichting telt mee)
+#   /event setup dropper portal <map>   portal van die map naar de volgende map (vaker = meerdere portals)
+#   /event setup dropper finish <nr>    een finish; welke finish je ook raakt, je bent binnen
+#   /event setup dropper lobby | list | show | clear <start|portal|finish> <nr>
+# Ga voor een portal of finish in het midden onderaan staan (voeten op de onderste rand).
+dropper:
+  min-players: 2
+  max-players: 20
+  lobby-countdown: 30
+  start-delay-seconds: 5      # countdown op de start van map 1, iedereen staat stil
+  win-delay-seconds: 8
+  winners: 3                  # aantal plekken: 1 = alleen een winnaar, 3 = top 3. De race stopt als ze vergeven zijn
+  max-duration-seconds: 600   # tijdslimiet (0 = geen limiet)
+  portal-radius: 2.0          # zo breed als een netherportal met lijst: 2 blokken opzij, alle kanten op
+  portal-height: 3.0          # zo hoog als een netherportal, vanaf je voeten
+  finish-radius: 2.0
+  finish-height: 3.0
+  reset-on-fall-damage: true  # elke valschade = terug naar de start van de map (uit = alleen als je dood zou gaan)
+  skip-after-fails: 10        # na zoveel keer mis op dezelfde map krijg je een skip (ijzerstaaf). Niet op de laatste map (0 = uit)
+  void-depth: 20              # zak je zo ver onder het laagste punt van je map, dan begin je opnieuw
+  rewards:
+    enabled: false
+    min-players: 2
+    # Console-commando's per plek, %player% wordt de spelernaam.
+    places:
+      1: []
+      2: []
+      3: []
+    participation: []
+
+# Parkour Race: van de spawn via de checkpoints naar de finish, de eerste bij de finish wint.
+#   /event setup parkour lobby | spawn | finish   (je kijkrichting telt mee)
+#   /event setup parkour checkpoint add           (op volgorde; ook insert|remove|tp <nr>, list, show, clear)
+# Val je, dan ga je terug naar je laatste checkpoint. Een checkpoint verderop telt ook.
+parkour:
+  min-players: 2
+  max-players: 20
+  lobby-countdown: 30
+  start-delay-seconds: 5      # countdown op de spawn, iedereen staat stil
+  win-delay-seconds: 8
+  winners: 1                  # aantal plekken: 1 = de eerste bij de finish wint, 3 = top 3
+  max-duration-seconds: 600   # tijdslimiet (0 = geen limiet)
+  checkpoint-radius: 1.5      # hoe dicht je bij een checkpoint moet komen (opzij, in blokken)
+  checkpoint-height: 2.0      # en hoe hoog boven het punt het nog telt
+  finish-radius: 1.5
+  finish-height: 2.0
+  fall-depth: 5               # zak je zo ver onder het laagste punt van de baan, dan ben je gevallen
+  reset-in-water: true        # in water = gevallen
+  reset-in-lava: true         # in lava = gevallen (je krijgt geen schade)
+  checkpoints: []             # vul je met /event setup parkour checkpoint add
+  rewards:
+    enabled: false
+    min-players: 2
+    # Console-commando's per plek, %player% wordt de spelernaam.
+    places:
+      1: []
+      2: []
+      3: []
+    participation: []

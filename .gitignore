@@ -1,0 +1,8 @@
+@"
+.idea/
+*.iml
+out/
+target/
+build/
+.gradle/
+"@ | Set-Content -Encoding utf8 .gitignore
